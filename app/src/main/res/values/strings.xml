@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">GyroSpecks</string>
+    <string name="activity_main_drawer_layout_imageView_icon_description">icon_description</string>
+</resources>

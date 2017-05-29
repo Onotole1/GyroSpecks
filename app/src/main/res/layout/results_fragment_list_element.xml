@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/activity_history_list_element_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/results_fragment_list_element_text_padding"
+        android:paddingRight="@dimen/results_fragment_list_element_text_padding"
+        android:paddingTop="@dimen/results_fragment_list_element_text_padding"
+        tools:text="Какой-то русский текст"/>
+
+    <TextView
+        android:id="@+id/activity_history_list_element_language"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/results_fragment_list_element_text_padding"
+        android:paddingLeft="@dimen/results_fragment_list_element_text_padding"
+        android:paddingRight="@dimen/results_fragment_list_element_text_padding"
+        tools:text="Russian"/>
+</LinearLayout>
