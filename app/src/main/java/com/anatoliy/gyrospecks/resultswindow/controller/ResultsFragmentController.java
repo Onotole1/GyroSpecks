@@ -8,8 +8,6 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ListView;
 
@@ -25,8 +23,6 @@ import java.util.Collections;
  * Time: 22:46
  *
  * @author anatoliy
- *
- * Объект данного класса содержит логику по взаимодействию с фрагментом экрана истории.
  */
 public class ResultsFragmentController extends BaseFragmentController {
     private final static String HISTORY_ACTIVITY_CONTROLLER
@@ -72,7 +68,6 @@ public class ResultsFragmentController extends BaseFragmentController {
         localBroadcastManager = LocalBroadcastManager.getInstance(activity);
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ResultsFragmentBroadcastReceiver.getReadActionKey());
-        intentFilter.addAction(ResultsFragmentBroadcastReceiver.getNoInternetExceptionKey());
         localBroadcastManager.registerReceiver(historyFragmentBroadcastReceiver, intentFilter);
 
         historyFragmentBroadcastReceiver.addObserver(this);
@@ -91,12 +86,6 @@ public class ResultsFragmentController extends BaseFragmentController {
         //close drawer
     }
 
-    /**
-     * В данном методе происходит заполнение списка элементов listView данными,
-     * пришедшими из historyFragmentBroadcastReceiver
-     * @param parcelables - список элементов для заполнения списка
-     *                    (ArrayList<ResponseTrio implements Parcelable>)
-     */
     void updateOnUpdate(final ArrayList<Parcelable> parcelables) {
         final ArrayList<DbResponse> responseTrios = new ArrayList<>();
         for (int i = 0, size = parcelables.size(); i < size; i++) {

@@ -20,7 +20,6 @@ import java.util.List;
  * Time: 23:00
  *
  * @author anatoliy
- *
  */
 class ListViewAdapter extends ArrayAdapter<DbResponse> {
 

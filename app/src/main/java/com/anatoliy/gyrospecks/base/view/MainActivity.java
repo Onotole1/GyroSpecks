@@ -50,20 +50,58 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void notifyObserversOnCreate(final Bundle savedInstanceState) {
-        for (final MainActivityController observer:observers) {
+        for (int i = 0, observersSize = observers.size(); i < observersSize; i++) {
+            final MainActivityController observer = observers.get(i);
             observer.updateOnCreate(savedInstanceState);
         }
     }
 
     private void notifyObserversOnResume() {
-        for (final MainActivityController observer:observers) {
+        for (int i = 0, observersSize = observers.size(); i < observersSize; i++) {
+            final MainActivityController observer = observers.get(i);
             observer.updateOnResume();
         }
     }
 
     private void notifyObserversOnPause() {
-        for (final MainActivityController observer:observers) {
+        for (int i = 0, observersSize = observers.size(); i < observersSize; i++) {
+            final MainActivityController observer = observers.get(i);
             observer.updateOnPause();
+        }
+    }
+
+    public void setGameFragment() {
+        notifyObserversOnSetGameFragment();
+    }
+
+    private void notifyObserversOnSetGameFragment() {
+        for (int i = 0, observersSize = observers.size(); i < observersSize; i++) {
+            final MainActivityController observer = observers.get(i);
+            observer.updateOnSetGameFragment();
+        }
+    }
+
+    public void setResultsFragment() {
+        notifyObserversOnSetResultsFragment();
+    }
+
+    private void notifyObserversOnSetResultsFragment() {
+        for (int i = 0, observersSize = observers.size(); i < observersSize; i++) {
+            final MainActivityController observer = observers.get(i);
+            observer.updateOnSetResultsFragment();
+        }
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        notifyObserversOnSupportNavigateUp();
+        return true;
+    }
+
+    private void notifyObserversOnSupportNavigateUp() {
+        for (int i = 0, size = observers.size(); i < size; i++) {
+            final MainActivityController observer = observers.get(i);
+            observer.updateOnSupportNavigateUp();
         }
     }
 }

@@ -16,15 +16,11 @@ import java.util.ArrayList;
  * Time: 8:48
  *
  * @author anatoliy
- *
- * Объект данного класса получает широковещательные сообщения и оповещает о них своих подписчиков
  */
 public class ResultsFragmentBroadcastReceiver extends BaseBroadcastReceiver {
     private final static String HISTORY_ACTIVITY_BROADCAST_RECEIVER
             = "com.spitchenko.appsgeyser.historywindow.controller.ResultsFragmentBroadcastReceiver";
     private final static String READ_ACTION = HISTORY_ACTIVITY_BROADCAST_RECEIVER + ".readAction";
-    private final static String NO_INTERNET_EXCEPTION = HISTORY_ACTIVITY_BROADCAST_RECEIVER
-            + ".noInternetException";
 
     @Override
     public void onReceive(final Context context, final Intent intent) {
@@ -34,11 +30,6 @@ public class ResultsFragmentBroadcastReceiver extends BaseBroadcastReceiver {
         }
     }
 
-    /**
-     * Метод отправляет подписчикам данные, полученные из сервиса
-     * @param parcelables - список элементов для отправки
-     *                    (ArrayList<ResponseTrio implements Parcelable>)
-     */
     private void notifyObserversUpdate(final ArrayList<Parcelable> parcelables) {
         for (int i = 0, size = observers.size(); i < size; i++) {
             final ResultsFragmentController observer = (ResultsFragmentController) observers.get(i);
@@ -50,18 +41,6 @@ public class ResultsFragmentBroadcastReceiver extends BaseBroadcastReceiver {
         return READ_ACTION;
     }
 
-    public static String getNoInternetExceptionKey() {
-        return NO_INTERNET_EXCEPTION;
-    }
-
-    /**
-     * Интерфейс для отправки широковещательного сообщения
-     * @param parcels - список элементов для отправки
-     *                    (ArrayList<ResponseTrio implements Parcelable>)
-     * @param action - действие
-     * @param packageName - имя пакета
-     * @param context - контекст
-     */
     public static void sendToBroadcast(@NonNull final String action
             , @NonNull final String packageName, @NonNull final Context context
             , @Nullable final ArrayList<Parcelable> parcels) {
