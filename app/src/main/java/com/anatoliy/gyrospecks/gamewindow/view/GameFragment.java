@@ -23,7 +23,7 @@ public final class GameFragment extends BaseFragment {
 
 
     private final static String MAIN_FRAGMENT
-            = "com.spitchenko.appsgeyser.mainwindow.userinterface.MainFragment";
+            = "com.anatoliy.gyrospecks.gamewindow.view.MainFragment";
 
     GameFragmentController controller = new GameFragmentController(this);
 
@@ -63,7 +63,7 @@ public final class GameFragment extends BaseFragment {
         removeObserver(controller);
     }
 
-    public static String getMainFragment() {
+    public static String getGameFragment() {
         return MAIN_FRAGMENT;
     }
 

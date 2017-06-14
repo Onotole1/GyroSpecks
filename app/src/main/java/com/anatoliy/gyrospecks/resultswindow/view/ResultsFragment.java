@@ -20,8 +20,8 @@ import com.anatoliy.gyrospecks.resultswindow.controller.ResultsFragmentControlle
  */
 
 public class ResultsFragment extends BaseFragment {
-    private final static String HISTORY_FRAGMENT
-            =  "com.spitchenko.appsgeyser.historywindow.userinterface.ResultsFragment";
+    private final static String RESULT_FRAGMENT
+            =  "com.anatoliy.gyrospecks.resultswindow.view.ResultsFragment";
     private final ResultsFragmentController historyFragmentController
             = new ResultsFragmentController(this);
 
@@ -52,7 +52,7 @@ public class ResultsFragment extends BaseFragment {
         removeObserver(historyFragmentController);
     }
 
-    public static String getHistoryFragment() {
-        return HISTORY_FRAGMENT;
+    public static String getResultFragment() {
+        return RESULT_FRAGMENT;
     }
 }

@@ -15,13 +15,22 @@ import com.anatoliy.gyrospecks.base.view.MainActivity;
  *
  * @author anatoliy
  */
-public class DrawerItemClickListener implements ListView.OnItemClickListener {
+class DrawerItemClickListener implements ListView.OnItemClickListener {
+    private final MainActivityController mainActivityController;
+
+    DrawerItemClickListener(final MainActivityController mainActivityController) {
+        this.mainActivityController = mainActivityController;
+    }
+
     @Override
     public void onItemClick(final AdapterView<?> parent, final View view, final int position
             , final long id) {
         final DrawerPair pair = (DrawerPair) ((ListView) parent).getAdapter().getItem(position);
         final String pairDescription = pair.getDescription();
         final Context context = view.getContext();
+
+        mainActivityController.closeDrawer();
+
         if (pairDescription.equals(context
                 .getString(R.string.drawer_layout_textView_description_game))) {
             ((MainActivity)view.getContext()).setGameFragment();

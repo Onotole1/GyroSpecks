@@ -7,4 +7,6 @@
     <color name="colorEmptyCell">#FFFFFF</color>
     <color name="colorFillCell">#303F9F</color>
     <color name="colorBackgroundWhite">#FFFFFF</color>
+    <color name="drawerHeaderText">#ffffff</color>
+    <color name="selected">#E8E8E8</color>
 </resources>

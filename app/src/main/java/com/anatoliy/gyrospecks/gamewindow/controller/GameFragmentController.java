@@ -14,6 +14,8 @@ import com.anatoliy.gyrospecks.base.controller.BaseFragmentController;
 import com.anatoliy.gyrospecks.gamewindow.view.GameFragment;
 import com.anatoliy.gyrospecks.model.Cell;
 import com.anatoliy.gyrospecks.model.Position;
+import com.anatoliy.gyrospecks.utils.StopWatch;
+import com.anatoliy.gyrospecks.utils.StopWatchListener;
 
 import java.util.HashSet;
 
@@ -24,11 +26,13 @@ import java.util.HashSet;
  * @author Anatoliy
  */
 
-public class GameFragmentController extends BaseFragmentController {
+public class GameFragmentController extends BaseFragmentController implements StopWatchListener {
+    private View rootView;
     private final static int NUMBER_CELLS_BY_X = 4;
     private final static int NUMBER_CELLS_BY_Y = 4;
     private final static int NUMBER_CELLS = NUMBER_CELLS_BY_X * NUMBER_CELLS_BY_Y;
     private final static String BUTTON_TAG = "button%s_%s";
+    private final StopWatch stopWatch = new StopWatch();
 
     private final static Cell[] winBoardArray = {
             new Cell(0, new Position(3, 3)),
@@ -68,7 +72,10 @@ public class GameFragmentController extends BaseFragmentController {
 
     @Override
     public void updateOnCreateView(final View view) {
-
+        rootView = view;
+        newGame();
+        stopWatch.addListener(this);
+        stopWatch.start();
     }
 
     @Override
@@ -83,22 +90,17 @@ public class GameFragmentController extends BaseFragmentController {
 
     @Override
     public void updateOnResume() {
-        final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(SensorValuesBroadcastReceiver.getSensorValuesKey());
-        LocalBroadcastManager.getInstance(gameFragment.getActivity())
-                .registerReceiver(sensorValuesBroadcastReceiver, intentFilter);
-
-        sensorValuesBroadcastReceiver.addObserver(this);
-
-        SensorAlarmListenerService.start(gameFragment.getActivity()
-                , SensorAlarmListenerService.getActionStart());
+        resumeGame();
     }
 
     @Override
     public void updateOnPause() {
-        LocalBroadcastManager.getInstance(gameFragment.getActivity())
-                .unregisterReceiver(sensorValuesBroadcastReceiver);
-        sensorValuesBroadcastReceiver.removeObserver(this);
+        pauseGame();
+    }
+
+    @Override
+    public void OnSecondsIterate(final long seconds) {
+
     }
 
     private void initWinBoard() {
@@ -110,6 +112,7 @@ public class GameFragmentController extends BaseFragmentController {
     }
 
     private void newGame() {
+        initWinBoard();
         fillBoard();
     }
 
@@ -148,6 +151,24 @@ public class GameFragmentController extends BaseFragmentController {
         }
 
         drawBoard();
+    }
+
+    private void resumeGame() {
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(SensorValuesBroadcastReceiver.getSensorValuesKey());
+        LocalBroadcastManager.getInstance(gameFragment.getActivity())
+                .registerReceiver(sensorValuesBroadcastReceiver, intentFilter);
+
+        sensorValuesBroadcastReceiver.addObserver(this);
+
+        SensorAlarmListenerService.start(gameFragment.getActivity()
+                , SensorAlarmListenerService.getActionStart());
+    }
+
+    private void pauseGame() {
+        LocalBroadcastManager.getInstance(gameFragment.getActivity())
+                .unregisterReceiver(sensorValuesBroadcastReceiver);
+        sensorValuesBroadcastReceiver.removeObserver(this);
     }
 
     void step(final int step) {
@@ -259,8 +280,8 @@ public class GameFragmentController extends BaseFragmentController {
 
         final Activity activity = gameFragment.getActivity();
 
-        final TableLayout tableLayout
-                = (TableLayout) activity.findViewById(R.id.activity_main_table);
+        final TableLayout tableLayout = (TableLayout) rootView.findViewById(R.id.activity_main_table);
+
         final Button button = (Button) tableLayout.findViewWithTag(String.format(BUTTON_TAG
                 , cellPosition.getX(), cellPosition.getY()));
 

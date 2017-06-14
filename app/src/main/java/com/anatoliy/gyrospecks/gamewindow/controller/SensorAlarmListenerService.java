@@ -30,8 +30,6 @@ public class SensorAlarmListenerService extends IntentService {
 
     private volatile boolean isStop;
 
-    private final Handler handler = new Handler();
-
     public SensorAlarmListenerService() {
         super(SENSOR_ALARM_LISTENER_SERVICE);
     }
