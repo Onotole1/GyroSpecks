@@ -67,5 +67,7 @@ public final class GameFragment extends BaseFragment {
         return MAIN_FRAGMENT;
     }
 
-
+    public GameFragmentController getController() {
+        return controller;
+    }
 }

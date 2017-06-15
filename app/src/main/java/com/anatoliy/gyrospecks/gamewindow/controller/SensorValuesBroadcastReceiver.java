@@ -47,6 +47,8 @@ public class SensorValuesBroadcastReceiver extends BroadcastReceiver {
             } else if (yValue < -SENSITIVITY) {
                 stepUp();
             }
+
+            secondPassed();
         }
     }
 
@@ -91,6 +93,13 @@ public class SensorValuesBroadcastReceiver extends BroadcastReceiver {
         for (int i = 0, observersSize = observers.size(); i < observersSize; i++) {
             final GameFragmentController game = observers.get(i);
             game.step(Steps.BOTTOM);
+        }
+    }
+
+    private void secondPassed() {
+        for (int i = 0, observersSize = observers.size(); i < observersSize; i++) {
+            final GameFragmentController game = observers.get(i);
+            game.secondPassed();
         }
     }
 

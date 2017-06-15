@@ -22,22 +22,26 @@
             <Button
                 android:layout_width="@dimen/cell_size"
                 android:layout_height="@dimen/cell_size"
-                android:tag="button0_0" />
+                android:tag="button0_0"
+                android:textSize="@dimen/game_fragment_cell_textsize"/>
 
             <Button
                 android:layout_width="@dimen/cell_size"
                 android:layout_height="@dimen/cell_size"
-                android:tag="button0_1"/>
+                android:tag="button0_1"
+                android:textSize="@dimen/game_fragment_cell_textsize"/>
 
             <Button
                 android:layout_width="@dimen/cell_size"
                 android:layout_height="@dimen/cell_size"
-                android:tag="button0_2"/>
+                android:tag="button0_2"
+                android:textSize="@dimen/game_fragment_cell_textsize"/>
 
             <Button
                 android:layout_width="@dimen/cell_size"
                 android:layout_height="@dimen/cell_size"
-                android:tag="button0_3"/>
+                android:tag="button0_3"
+                android:textSize="@dimen/game_fragment_cell_textsize"/>
         </TableRow>
 
         <TableRow
@@ -47,22 +51,26 @@
             <Button
                 android:layout_width="@dimen/cell_size"
                 android:layout_height="@dimen/cell_size"
-                android:tag="button1_0"/>
+                android:tag="button1_0"
+                android:textSize="@dimen/game_fragment_cell_textsize"/>
 
             <Button
                 android:layout_width="@dimen/cell_size"
                 android:layout_height="@dimen/cell_size"
-                android:tag="button1_1"/>
+                android:tag="button1_1"
+                android:textSize="@dimen/game_fragment_cell_textsize"/>
 
             <Button
                 android:layout_width="@dimen/cell_size"
                 android:layout_height="@dimen/cell_size"
-                android:tag="button1_2"/>
+                android:tag="button1_2"
+                android:textSize="@dimen/game_fragment_cell_textsize"/>
 
             <Button
                 android:layout_width="@dimen/cell_size"
                 android:layout_height="@dimen/cell_size"
-                android:tag="button1_3"/>
+                android:tag="button1_3"
+                android:textSize="@dimen/game_fragment_cell_textsize"/>
         </TableRow>
 
         <TableRow
@@ -72,22 +80,26 @@
             <Button
                 android:layout_width="@dimen/cell_size"
                 android:layout_height="@dimen/cell_size"
-                android:tag="button2_0"/>
+                android:tag="button2_0"
+                android:textSize="@dimen/game_fragment_cell_textsize"/>
 
             <Button
                 android:layout_width="@dimen/cell_size"
                 android:layout_height="@dimen/cell_size"
-                android:tag="button2_1"/>
+                android:tag="button2_1"
+                android:textSize="@dimen/game_fragment_cell_textsize"/>
 
             <Button
                 android:layout_width="@dimen/cell_size"
                 android:layout_height="@dimen/cell_size"
-                android:tag="button2_2"/>
+                android:tag="button2_2"
+                android:textSize="@dimen/game_fragment_cell_textsize"/>
 
             <Button
                 android:layout_width="@dimen/cell_size"
                 android:layout_height="@dimen/cell_size"
-                android:tag="button2_3"/>
+                android:tag="button2_3"
+                android:textSize="@dimen/game_fragment_cell_textsize"/>
         </TableRow>
 
         <TableRow
@@ -97,23 +109,27 @@
             <Button
                 android:layout_width="@dimen/cell_size"
                 android:layout_height="@dimen/cell_size"
-                android:tag="button3_0"/>
+                android:tag="button3_0"
+                android:textSize="@dimen/game_fragment_cell_textsize"/>
 
             <Button
                 android:layout_width="@dimen/cell_size"
                 android:layout_height="@dimen/cell_size"
-                android:tag="button3_1"/>
+                android:tag="button3_1"
+                android:textSize="@dimen/game_fragment_cell_textsize"/>
 
             <Button
                 android:id="@+id/button3_2"
                 android:layout_width="@dimen/cell_size"
                 android:layout_height="@dimen/cell_size"
-                android:tag="button3_2"/>
+                android:tag="button3_2"
+                android:textSize="@dimen/game_fragment_cell_textsize"/>
 
             <Button
                 android:layout_width="@dimen/cell_size"
                 android:layout_height="@dimen/cell_size"
-                android:tag="button3_3"/>
+                android:tag="button3_3"
+                android:textSize="@dimen/game_fragment_cell_textsize"/>
         </TableRow>
     </TableLayout>
 
@@ -132,10 +148,11 @@
     </TableLayout>
 
     <TextView
-        android:id="@+id/activity_main_textView_y"
+        android:id="@+id/activity_main_textView_stopwatch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:text="TextView"
+        android:textSize="40sp"
         android:layout_marginLeft="8dp"
         app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginRight="8dp"

@@ -26,6 +26,8 @@ public class SensorAlarmListenerService extends IntentService {
 
     private final static int PERIOD = 1000;
 
+    private int startSeconds;
+
     private AccelerometerListener accelerometerListener;
 
     private volatile boolean isStop;
@@ -52,6 +54,7 @@ public class SensorAlarmListenerService extends IntentService {
     }
 
     private void startAlarm() {
+
         final Runnable runnable = new Runnable() {
             @Override
             public void run() {

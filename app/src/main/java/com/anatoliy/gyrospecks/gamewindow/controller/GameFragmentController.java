@@ -1,13 +1,16 @@
 package com.anatoliy.gyrospecks.gamewindow.controller;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TableLayout;
+import android.widget.TextView;
 
 import com.anatoliy.gyrospecks.R;
 import com.anatoliy.gyrospecks.base.controller.BaseFragmentController;
@@ -15,8 +18,12 @@ import com.anatoliy.gyrospecks.gamewindow.view.GameFragment;
 import com.anatoliy.gyrospecks.model.Cell;
 import com.anatoliy.gyrospecks.model.Position;
 import com.anatoliy.gyrospecks.utils.StopWatch;
-import com.anatoliy.gyrospecks.utils.StopWatchListener;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.HashSet;
 
 /**
@@ -26,13 +33,17 @@ import java.util.HashSet;
  * @author Anatoliy
  */
 
-public class GameFragmentController extends BaseFragmentController implements StopWatchListener {
-    private View rootView;
+public class GameFragmentController extends BaseFragmentController {
     private final static int NUMBER_CELLS_BY_X = 4;
     private final static int NUMBER_CELLS_BY_Y = 4;
     private final static int NUMBER_CELLS = NUMBER_CELLS_BY_X * NUMBER_CELLS_BY_Y;
     private final static String BUTTON_TAG = "button%s_%s";
-    private final StopWatch stopWatch = new StopWatch();
+    private final static String STATE_FILE = "state";
+
+    private View rootView;
+    private TextView textViewStopwatch;
+    private int seconds;
+    private boolean isPaused;
 
     private final static Cell[] winBoardArray = {
             new Cell(0, new Position(3, 3)),
@@ -73,9 +84,10 @@ public class GameFragmentController extends BaseFragmentController implements St
     @Override
     public void updateOnCreateView(final View view) {
         rootView = view;
+        textViewStopwatch = (TextView) view.findViewById(R.id.activity_main_textView_stopwatch);
         newGame();
-        stopWatch.addListener(this);
-        stopWatch.start();
+        //stopWatch.addListener(this);
+        //stopWatch.start();
     }
 
     @Override
@@ -91,16 +103,17 @@ public class GameFragmentController extends BaseFragmentController implements St
     @Override
     public void updateOnResume() {
         resumeGame();
+        //stopWatch.resume();
     }
 
     @Override
     public void updateOnPause() {
         pauseGame();
+        //stopWatch.pause();
     }
 
-    @Override
-    public void OnSecondsIterate(final long seconds) {
-
+    public boolean isPaused() {
+        return isPaused;
     }
 
     private void initWinBoard() {
@@ -110,6 +123,21 @@ public class GameFragmentController extends BaseFragmentController implements St
         }
 
     }
+
+    private void saveState() {
+        try {
+            final Activity activity = gameFragment.getActivity();
+            final FileOutputStream fileOutputStream
+                    = activity.openFileOutput(STATE_FILE, Context.MODE_PRIVATE);
+            final ObjectOutputStream out = new ObjectOutputStream(fileOutputStream);
+            out.writeObject(board);
+            out.flush();
+        } catch (final IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //private void restoreState
 
     private void newGame() {
         initWinBoard();
@@ -153,7 +181,7 @@ public class GameFragmentController extends BaseFragmentController implements St
         drawBoard();
     }
 
-    private void resumeGame() {
+    public void resumeGame() {
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(SensorValuesBroadcastReceiver.getSensorValuesKey());
         LocalBroadcastManager.getInstance(gameFragment.getActivity())
@@ -163,12 +191,18 @@ public class GameFragmentController extends BaseFragmentController implements St
 
         SensorAlarmListenerService.start(gameFragment.getActivity()
                 , SensorAlarmListenerService.getActionStart());
+
+        isPaused = false;
     }
 
-    private void pauseGame() {
+    public void pauseGame() {
         LocalBroadcastManager.getInstance(gameFragment.getActivity())
                 .unregisterReceiver(sensorValuesBroadcastReceiver);
         sensorValuesBroadcastReceiver.removeObserver(this);
+        SensorAlarmListenerService.start(gameFragment.getActivity()
+                , SensorAlarmListenerService.getActionStop());
+
+        isPaused = true;
     }
 
     void step(final int step) {
@@ -278,21 +312,22 @@ public class GameFragmentController extends BaseFragmentController implements St
     private void drawCell(final Cell cell) {
         final Position cellPosition = cell.getPosition();
 
-        final Activity activity = gameFragment.getActivity();
-
         final TableLayout tableLayout = (TableLayout) rootView.findViewById(R.id.activity_main_table);
 
         final Button button = (Button) tableLayout.findViewWithTag(String.format(BUTTON_TAG
                 , cellPosition.getX(), cellPosition.getY()));
 
         if (0 == cell.getNumber()) {
-            button.setEnabled(false);
-            button.setBackgroundColor(activity.getResources().getColor(R.color.colorEmptyCell));
+            button.setBackgroundColor(gameFragment.getResources().getColor(R.color.colorEmptyCell));
             button.setText("");
         } else {
             button.setText(String.valueOf(cell.getNumber()));
-            button.setEnabled(true);
-            button.setBackgroundColor(activity.getResources().getColor(R.color.colorFillCell));
+            button.setBackgroundDrawable(gameFragment.getResources().getDrawable(R.drawable.ic_cell));
         }
+    }
+
+    void secondPassed() {
+        seconds++;
+        textViewStopwatch.setText(StopWatch.formatTime(seconds));
     }
 }

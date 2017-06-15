@@ -3,4 +3,7 @@
     <string name="activity_main_drawer_layout_imageView_icon_description">icon_description</string>
     <string name="drawer_layout_textView_description_game">Игра</string>
     <string name="drawer_layout_textView_description_results">Результаты</string>
+    <string name="open_drawer">openDrawer</string>
+    <string name="close_drawer">closeDrawer</string>
+    <string name="game_fragment_menu_resume_pause_action">ResumePause</string>
 </resources>

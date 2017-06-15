@@ -12,8 +12,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -22,6 +24,7 @@ import android.widget.TextView;
 import com.anatoliy.gyrospecks.R;
 import com.anatoliy.gyrospecks.base.model.DrawerPair;
 import com.anatoliy.gyrospecks.base.view.MainActivity;
+import com.anatoliy.gyrospecks.gamewindow.controller.GameFragmentController;
 import com.anatoliy.gyrospecks.gamewindow.view.GameFragment;
 import com.anatoliy.gyrospecks.resultswindow.view.ResultsFragment;
 
@@ -51,7 +54,7 @@ public class MainActivityController {
     }
 
     public void updateOnCreate(@Nullable final Bundle savedInstanceState) {
-        initDrawer();
+        initDrawerToggle();
 
         if (null == savedInstanceState) {
             final GameFragment gameFragment = new GameFragment();
@@ -63,7 +66,7 @@ public class MainActivityController {
         }
     }
 
-    private void initDrawer() {
+    private DrawerLayout initDrawer() {
         final DrawerPair addElement = new DrawerPair(activity.getResources().getDrawable(R.drawable.ic_action_game)
                 , activity.getString(R.string
                 .drawer_layout_textView_description_game));
@@ -83,12 +86,6 @@ public class MainActivityController {
                 , drawerListView, false);
         drawerListView.addHeaderView(header, null, false);
 
-        final ActionBar actionBar = activity.getSupportActionBar();
-
-        if (actionBar != null) {
-            actionBar.hide();
-        }
-
         drawerListView.post(new Runnable() {
             @Override
             public void run() {
@@ -99,6 +96,31 @@ public class MainActivityController {
                 }
             }
         });
+
+        return drawerLayout;
+    }
+
+    private android.support.v7.widget.Toolbar initToolbar() {
+
+        final android.support.v7.widget.Toolbar toolbar
+                = (android.support.v7.widget.Toolbar) activity
+                .findViewById(R.id.activity_main_toolbar);
+
+        activity.setSupportActionBar(toolbar);
+
+        return toolbar;
+    }
+
+    private void initDrawerToggle() {
+        final Toolbar toolbar = initToolbar();
+        final DrawerLayout drawerLayout = initDrawer();
+
+        final ActionBarDrawerToggle actionBarDrawerToggle
+                = new ActionBarDrawerToggle(activity, drawerLayout, toolbar, R.string.open_drawer
+                , (R.string.close_drawer));
+
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
+        actionBarDrawerToggle.syncState();
     }
 
     private boolean isGameFragmentOnTheWindow() {
@@ -129,20 +151,30 @@ public class MainActivityController {
         final FragmentManager manager = activity.getFragmentManager();
         final Fragment fragmentByTag = manager.findFragmentByTag(GameFragment.getGameFragment());
         if (null == fragmentByTag) {
-            replaceMainFragment(manager);
+            replaceGameFragment(manager);
         } else {
             if (fragmentByTag.isVisible()) {
                 drawerLayout.closeDrawers();
             } else {
                 manager.popBackStackImmediate();
-                replaceMainFragment(manager);
+                replaceGameFragment(manager);
             }
         }
 
         selectGameFragment();
     }
 
-    private void replaceMainFragment(final FragmentManager fragmentManager) {
+    private GameFragmentController getGameFragmentController() {
+        final FragmentManager manager = activity.getFragmentManager();
+        final GameFragment fragmentByTag = (GameFragment) manager.findFragmentByTag(GameFragment.getGameFragment());
+        if (null != fragmentByTag) {
+            return fragmentByTag.getController();
+        } else {
+            return null;
+        }
+    }
+
+    private void replaceGameFragment(final FragmentManager fragmentManager) {
         final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.activity_main_container, new GameFragment()
                 , GameFragment.getGameFragment());
@@ -248,5 +280,20 @@ public class MainActivityController {
         historyFragmentIconDrawable.setColorFilter(new PorterDuffColorFilter(activity.getResources()
                 .getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP));
         historyFragmentIcon.setImageDrawable(historyFragmentIconDrawable);
+    }
+
+    public void updateOnOptionsItemSelected(final MenuItem item) {
+        if (isGameFragmentOnTheWindow()) {
+            final GameFragmentController gameFragmentController = getGameFragmentController();
+            if (null != gameFragmentController) {
+                if (gameFragmentController.isPaused()) {
+                    item.setIcon(activity.getResources().getDrawable(R.drawable.ic_action_pause));
+                    gameFragmentController.resumeGame();
+                } else {
+                    item.setIcon(activity.getResources().getDrawable(R.drawable.ic_action_resume));
+                    gameFragmentController.pauseGame();
+                }
+            }
+        }
     }
 }

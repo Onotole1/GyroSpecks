@@ -1,7 +1,5 @@
 package com.anatoliy.gyrospecks.utils;
 
-import java.util.ArrayList;
-
 /**
  * Date: 15.06.2017
  * Time: 0:23
@@ -10,78 +8,32 @@ import java.util.ArrayList;
  */
 
 public class StopWatch {
-    private volatile boolean isRun;
+    private final static int SECONDS_IN_HOUR = 3600;
+    private final static int SECONDS_IN_MINUTE = 60;
+    private final static String STOPWATCH_STRING = "%s:%s";
+    private final static String STOPWATCH_IS_FULL = "";
 
-    private long startTime;
 
-    private final ArrayList<StopWatchListener> listeners = new ArrayList<>();
+    public static String formatTime(final long seconds) {
+        if (seconds < SECONDS_IN_MINUTE) {
+            return String.format(STOPWATCH_STRING, formatNumbers(0), formatNumbers(seconds));
+        }
+        else if (seconds >= SECONDS_IN_MINUTE && seconds < SECONDS_IN_HOUR) {
+            final long minutes = seconds / SECONDS_IN_MINUTE;
+            final long secondsWithoutMinutes = seconds % SECONDS_IN_MINUTE;
 
-
-    public void start() {
-        startTime = System.currentTimeMillis();
-
-        isRun = true;
-        final Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                while (isRun) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (final InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    final long seconds = (System.currentTimeMillis() - startTime) / 1000;
-                    notifyOnSecondsIterate(seconds);
-                }
-            }
-        };
-
-        runnable.run();
-    }
-
-    public void resume() {
-        isRun = true;
-        final Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                while (isRun) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (final InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    final long seconds = (System.currentTimeMillis() - startTime) / 1000;
-                    notifyOnSecondsIterate(seconds);
-                }
-            }
-        };
-
-        runnable.run();
-    }
-
-    public void stop() {
-        isRun = false;
-    }
-
-    public void pause() {
-        isRun = false;
-    }
-
-    public void addListener(final StopWatchListener stopWatchListener) {
-        if (!listeners.contains(stopWatchListener)) {
-            listeners.add(stopWatchListener);
+            return String.format(STOPWATCH_STRING, formatNumbers(minutes), formatNumbers(secondsWithoutMinutes));
+        } else {
+            return STOPWATCH_IS_FULL;
         }
     }
 
-    public void removeListener(final StopWatchListener stopWatchListener) {
-        if (listeners.contains(stopWatchListener)) {
-            listeners.remove(stopWatchListener);
-        }
-    }
-
-    private void notifyOnSecondsIterate(final long seconds) {
-        for (final StopWatchListener listener:listeners) {
-            listener.OnSecondsIterate(seconds);
+    private static String formatNumbers(final long number) {
+        final String valueOf = String.valueOf(number);
+        if (valueOf.length() < 2) {
+            return "0" + valueOf;
+        } else {
+            return valueOf;
         }
     }
 }

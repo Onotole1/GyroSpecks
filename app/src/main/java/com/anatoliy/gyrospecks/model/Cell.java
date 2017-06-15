@@ -1,5 +1,8 @@
 package com.anatoliy.gyrospecks.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Date: 25.05.2017
  * Time: 21:50
@@ -7,7 +10,7 @@ package com.anatoliy.gyrospecks.model;
  * @author Anatoliy
  */
 
-public class Cell {
+public class Cell implements Parcelable {
     private int number;
     private Position position;
 
@@ -15,6 +18,22 @@ public class Cell {
         this.number = number;
         this.position = position;
     }
+
+    private Cell(final Parcel in) {
+        number = in.readInt();
+    }
+
+    public static final Creator<Cell> CREATOR = new Creator<Cell>() {
+        @Override
+        public Cell createFromParcel(final Parcel in) {
+            return new Cell(in);
+        }
+
+        @Override
+        public Cell[] newArray(final int size) {
+            return new Cell[size];
+        }
+    };
 
     public int getNumber() {
         return number;
@@ -33,14 +52,13 @@ public class Cell {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Cell cell = (Cell) o;
+        final Cell cell = (Cell) o;
 
-        if (number != cell.number) return false;
-        return position.equals(cell.position);
+        return number == cell.number && position.equals(cell.position);
 
     }
 
@@ -49,5 +67,15 @@ public class Cell {
         int result = number;
         result = 31 * result + position.hashCode();
         return result;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(final Parcel dest, final int flags) {
+        dest.writeInt(number);
     }
 }
