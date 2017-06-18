@@ -12,6 +12,7 @@ import android.provider.BaseColumns;
  */
 abstract class ResultsDataBase implements BaseColumns {
         static final String TABLE_NAME = "results";
+        static final String NAME = "name";
         static final String DATE = "date";
         static final String SPENT_TIME = "spent_time";
 }

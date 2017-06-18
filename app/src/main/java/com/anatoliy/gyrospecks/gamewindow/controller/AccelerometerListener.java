@@ -6,8 +6,6 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
-import com.anatoliy.gyrospecks.gamewindow.controller.SensorValuesBroadcastReceiver;
-
 /**
  * Date: 17.05.17
  * Time: 11:26
@@ -33,7 +31,7 @@ class AccelerometerListener implements SensorEventListener {
 
         sensorManager.unregisterListener(this);
 
-        SensorValuesBroadcastReceiver.sendBroadcast(SensorValuesBroadcastReceiver
+        GameWindowBroadcastReceiver.sendBroadcast(GameWindowBroadcastReceiver
                 .getSensorValuesKey(), values, context);
     }
 

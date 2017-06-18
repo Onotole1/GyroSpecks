@@ -15,6 +15,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -37,9 +38,8 @@ import com.anatoliy.gyrospecks.resultswindow.view.ResultsFragment;
 
 @SuppressWarnings("deprecation")
 public class MainActivityController {
-
-
     private final MainActivity activity;
+    private Menu menu;
 
     // 0 - position header
     private final static int GAME_FRAGMENT_POSITION_IN_DRAWER = 1;
@@ -48,6 +48,8 @@ public class MainActivityController {
     private DrawerLayout drawerLayout;
 
     private ListView drawerListView;
+
+    private Toolbar toolbar;
 
     public MainActivityController(@NonNull final MainActivity activity) {
         this.activity = activity;
@@ -92,7 +94,7 @@ public class MainActivityController {
                 if (isGameFragmentOnTheWindow()) {
                     selectGameFragment();
                 } else if (isResultsFragmentOnTheWindow()) {
-                    selectHistoryFragment();
+                    selectResultsFragment();
                 }
             }
         });
@@ -112,7 +114,7 @@ public class MainActivityController {
     }
 
     private void initDrawerToggle() {
-        final Toolbar toolbar = initToolbar();
+        toolbar = initToolbar();
         final DrawerLayout drawerLayout = initDrawer();
 
         final ActionBarDrawerToggle actionBarDrawerToggle
@@ -156,12 +158,12 @@ public class MainActivityController {
             if (fragmentByTag.isVisible()) {
                 drawerLayout.closeDrawers();
             } else {
-                manager.popBackStackImmediate();
                 replaceGameFragment(manager);
             }
         }
 
         selectGameFragment();
+        showGameButtonFromToolbar();
     }
 
     private GameFragmentController getGameFragmentController() {
@@ -179,6 +181,7 @@ public class MainActivityController {
         fragmentTransaction.replace(R.id.activity_main_container, new GameFragment()
                 , GameFragment.getGameFragment());
         fragmentTransaction.commit();
+        toolbar.setTitle(activity.getString(R.string.app_name));
     }
 
     public void updateOnSetResultsFragment() {
@@ -191,20 +194,36 @@ public class MainActivityController {
             if (fragmentByTag.isVisible()) {
                 drawerLayout.closeDrawers();
             } else {
-                manager.popBackStackImmediate();
                 replaceHistoryFragment(manager);
             }
         }
 
-        selectHistoryFragment();
+        selectResultsFragment();
+        hideGameButtonsFromToolbar();
+    }
+
+    private void showGameButtonFromToolbar() {
+        final MenuItem resumePauseItem = menu.findItem(R.id.action_resume_pause);
+        resumePauseItem.setVisible(true);
+
+        final MenuItem restartItem = menu.findItem(R.id.action_resume_restart);
+        restartItem.setVisible(true);
+    }
+
+    private void hideGameButtonsFromToolbar() {
+        final MenuItem resumePauseItem = menu.findItem(R.id.action_resume_pause);
+        resumePauseItem.setVisible(false);
+
+        final MenuItem restartItem = menu.findItem(R.id.action_resume_restart);
+        restartItem.setVisible(false);
     }
 
     private void replaceHistoryFragment(final FragmentManager fragmentManager) {
         final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.activity_main_container, new ResultsFragment()
                 , ResultsFragment.getResultFragment());
-        fragmentTransaction.addToBackStack(ResultsFragment.getResultFragment());
         fragmentTransaction.commit();
+        toolbar.setTitle(activity.getString(R.string.results_fragment_title));
     }
 
     public void updateOnSupportNavigateUp() {
@@ -214,7 +233,7 @@ public class MainActivityController {
         if (isGameFragmentOnTheWindow()) {
             selectGameFragment();
         } else if (isResultsFragmentOnTheWindow()) {
-            selectHistoryFragment();
+            selectResultsFragment();
         }
     }
 
@@ -229,71 +248,109 @@ public class MainActivityController {
         final ImageView mainFragmentIcon
                 = (ImageView) resultFragmentItem.findViewById(R.id.drawer_element_imageView_icon);
 
-        final Drawable mainFragmentIconDrawable = mainFragmentIcon.getDrawable();
-        mainFragmentIconDrawable.setColorFilter(new PorterDuffColorFilter(activity.getResources()
+        final Drawable gameFragmentIconDrawable = mainFragmentIcon.getDrawable();
+        gameFragmentIconDrawable.setColorFilter(new PorterDuffColorFilter(activity.getResources()
                 .getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP));
-        mainFragmentIcon.setImageDrawable(mainFragmentIconDrawable);
+        mainFragmentIcon.setImageDrawable(gameFragmentIconDrawable);
 
-        final View historyFragmentItem = drawerListView.getChildAt(RESULTS_FRAGMENT_POSITION_IN_DRAWER);
-        historyFragmentItem.setBackgroundColor(Color.TRANSPARENT);
+        final View resultsFragmentItem = drawerListView.getChildAt(RESULTS_FRAGMENT_POSITION_IN_DRAWER);
+        resultsFragmentItem.setBackgroundColor(Color.TRANSPARENT);
 
-        final TextView historyFragmentText
-                = (TextView) historyFragmentItem.findViewById(R.id.drawer_element_textView_description);
-        historyFragmentText.setTextColor(Color.GRAY);
+        final TextView resultsFragmentText
+                = (TextView) resultsFragmentItem.findViewById(R.id.drawer_element_textView_description);
+        resultsFragmentText.setTextColor(Color.GRAY);
 
-        final ImageView historyFragmentIcon
-                = (ImageView) historyFragmentItem.findViewById(R.id.drawer_element_imageView_icon);
+        final ImageView resultsFragmentIcon
+                = (ImageView) resultsFragmentItem.findViewById(R.id.drawer_element_imageView_icon);
 
-        final Drawable resultsFragmentIconDrawable = historyFragmentIcon.getDrawable();
+        final Drawable resultsFragmentIconDrawable = resultsFragmentIcon.getDrawable();
         resultsFragmentIconDrawable.setColorFilter(new PorterDuffColorFilter(Color.GRAY
                 , PorterDuff.Mode.SRC_ATOP));
-        historyFragmentIcon.setImageDrawable(resultsFragmentIconDrawable);
+        resultsFragmentIcon.setImageDrawable(resultsFragmentIconDrawable);
     }
 
-    private void selectHistoryFragment() {
-        final View mainFragmentItem = drawerListView.getChildAt(GAME_FRAGMENT_POSITION_IN_DRAWER);
-        mainFragmentItem.setBackgroundColor(Color.TRANSPARENT);
+    private void selectResultsFragment() {
+        final View gameFragmentItem = drawerListView.getChildAt(GAME_FRAGMENT_POSITION_IN_DRAWER);
+        gameFragmentItem.setBackgroundColor(Color.TRANSPARENT);
 
-        final TextView mainFragmentText
-                = (TextView) mainFragmentItem.findViewById(R.id.drawer_element_textView_description);
-        mainFragmentText.setTextColor(Color.GRAY);
+        final TextView gameFragmentText
+                = (TextView) gameFragmentItem.findViewById(R.id.drawer_element_textView_description);
+        gameFragmentText.setTextColor(Color.GRAY);
 
-        final ImageView mainFragmentIcon
-                = (ImageView) mainFragmentItem.findViewById(R.id.drawer_element_imageView_icon);
+        final ImageView gameFragmentIcon
+                = (ImageView) gameFragmentItem.findViewById(R.id.drawer_element_imageView_icon);
 
-        final Drawable mainFragmentIconDrawable = mainFragmentIcon.getDrawable();
-        mainFragmentIconDrawable.setColorFilter(new PorterDuffColorFilter(Color.GRAY
+        final Drawable gameFragmentIconDrawable = gameFragmentIcon.getDrawable();
+        gameFragmentIconDrawable.setColorFilter(new PorterDuffColorFilter(Color.GRAY
                 , PorterDuff.Mode.SRC_ATOP));
-        mainFragmentIcon.setImageDrawable(mainFragmentIconDrawable);
+        gameFragmentIcon.setImageDrawable(gameFragmentIconDrawable);
 
-        final View historyFragmentItem = drawerListView.getChildAt(RESULTS_FRAGMENT_POSITION_IN_DRAWER);
-        historyFragmentItem.setBackgroundColor(activity.getResources().getColor(R.color.selected));
+        final View resultsFragmentItem = drawerListView.getChildAt(RESULTS_FRAGMENT_POSITION_IN_DRAWER);
+        resultsFragmentItem.setBackgroundColor(activity.getResources().getColor(R.color.selected));
 
-        final TextView historyFragmentText
-                = (TextView) historyFragmentItem.findViewById(R.id.drawer_element_textView_description);
-        historyFragmentText.setTextColor(activity.getResources().getColor(R.color.colorPrimary));
+        final TextView ResultsFragmentText
+                = (TextView) resultsFragmentItem.findViewById(R.id.drawer_element_textView_description);
+        ResultsFragmentText.setTextColor(activity.getResources().getColor(R.color.colorPrimary));
 
-        final ImageView historyFragmentIcon
-                = (ImageView) historyFragmentItem.findViewById(R.id.drawer_element_imageView_icon);
+        final ImageView ResultsFragmentIcon
+                = (ImageView) resultsFragmentItem.findViewById(R.id.drawer_element_imageView_icon);
 
-        final Drawable historyFragmentIconDrawable = historyFragmentIcon.getDrawable();
-        historyFragmentIconDrawable.setColorFilter(new PorterDuffColorFilter(activity.getResources()
+        final Drawable ResultsFragmentIconDrawable = ResultsFragmentIcon.getDrawable();
+        ResultsFragmentIconDrawable.setColorFilter(new PorterDuffColorFilter(activity.getResources()
                 .getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP));
-        historyFragmentIcon.setImageDrawable(historyFragmentIconDrawable);
+        ResultsFragmentIcon.setImageDrawable(ResultsFragmentIconDrawable);
     }
 
     public void updateOnOptionsItemSelected(final MenuItem item) {
         if (isGameFragmentOnTheWindow()) {
             final GameFragmentController gameFragmentController = getGameFragmentController();
             if (null != gameFragmentController) {
-                if (gameFragmentController.isPaused()) {
-                    item.setIcon(activity.getResources().getDrawable(R.drawable.ic_action_pause));
-                    gameFragmentController.resumeGame();
-                } else {
-                    item.setIcon(activity.getResources().getDrawable(R.drawable.ic_action_resume));
-                    gameFragmentController.pauseGame();
+
+                final int itemId = item.getItemId();
+
+                switch (itemId) {
+                    case R.id.action_resume_pause:
+                        if (gameFragmentController.isPaused()) {
+                            item.setIcon(activity.getResources().getDrawable(R.drawable.ic_action_pause));
+                            gameFragmentController.resumeGame();
+                        } else {
+                            item.setIcon(activity.getResources().getDrawable(R.drawable.ic_action_resume));
+                            gameFragmentController.pauseGame();
+                        }
+                        break;
+                    case R.id.action_resume_restart:
+                        gameFragmentController.restartGame();
+                        break;
                 }
             }
         }
+    }
+
+    public void updateOnCreateOptionsMenu(final Menu menu) {
+        this.menu = menu;
+    }
+
+    public void showResutlsFragmentAndWin(@NonNull final String result) {
+        final FragmentManager manager = activity.getFragmentManager();
+        Fragment fragmentByTag = manager
+                .findFragmentByTag(ResultsFragment.getResultFragment());
+
+        final Bundle resultsBundle = new Bundle();
+        resultsBundle.putString(ResultsFragment.getShowResultDialog(), result);
+
+        final FragmentTransaction fragmentTransaction = manager.beginTransaction();
+
+        if (null == fragmentByTag) {
+            fragmentByTag = new ResultsFragment();
+        }
+
+        fragmentByTag.setArguments(resultsBundle);
+        fragmentTransaction.replace(R.id.activity_main_container, fragmentByTag
+                , ResultsFragment.getResultFragment());
+        fragmentTransaction.commit();
+
+        selectResultsFragment();
+        hideGameButtonsFromToolbar();
+        toolbar.setTitle(activity.getString(R.string.results_fragment_title));
     }
 }

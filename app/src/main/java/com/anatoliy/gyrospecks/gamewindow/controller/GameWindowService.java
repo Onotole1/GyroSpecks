@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -18,21 +17,19 @@ import java.util.List;
  * @author Anatoliy
  */
 
-public class SensorAlarmListenerService extends IntentService {
+public class GameWindowService extends IntentService {
     private final static String SENSOR_ALARM_LISTENER_SERVICE
-            = "com.anatoliy.accelspecks.controller.SensorAlarmListenerService";
+            = "com.anatoliy.accelspecks.controller.GameWindowService";
     private final static String ACTION_START = SENSOR_ALARM_LISTENER_SERVICE + ".start";
     private final static String ACTION_STOP = SENSOR_ALARM_LISTENER_SERVICE + ".stop";
 
     private final static int PERIOD = 1000;
 
-    private int startSeconds;
-
     private AccelerometerListener accelerometerListener;
 
     private volatile boolean isStop;
 
-    public SensorAlarmListenerService() {
+    public GameWindowService() {
         super(SENSOR_ALARM_LISTENER_SERVICE);
     }
 
@@ -50,7 +47,6 @@ public class SensorAlarmListenerService extends IntentService {
                     break;
             }
         }
-
     }
 
     private void startAlarm() {
@@ -97,7 +93,7 @@ public class SensorAlarmListenerService extends IntentService {
     }
 
     static void start(@NonNull final Context context, @NonNull final String action) {
-        final Intent intent = new Intent(context, SensorAlarmListenerService.class);
+        final Intent intent = new Intent(context, GameWindowService.class);
         intent.setAction(action);
         context.startService(intent);
     }

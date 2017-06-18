@@ -26,6 +26,7 @@ public class ResultsDataBaseHelper extends SQLiteOpenHelper {
     private static final String SQL_CREATE_WORDS_ENTRIES =
             "CREATE TABLE " + ResultsDataBase.TABLE_NAME + " (" +
                     ResultsDataBase._ID + " INTEGER PRIMARY KEY, " +
+                    ResultsDataBase.NAME + TEXT_TYPE + "," +
                     ResultsDataBase.DATE + TEXT_TYPE + "," +
                     ResultsDataBase.SPENT_TIME + TEXT_TYPE +
                     " )";
@@ -50,15 +51,16 @@ public class ResultsDataBaseHelper extends SQLiteOpenHelper {
     }
 
 
-    public void writeWordToDb(final String text, final String language) {
+    public void writeResultToDb(final String name, final String date, final String result) {
         SQLiteDatabase sqLiteDatabase = null;
 
         try {
             sqLiteDatabase= this.getWritableDatabase();
             final ContentValues values = new ContentValues();
 
-            values.put(ResultsDataBase.DATE, text);
-            values.put(ResultsDataBase.SPENT_TIME, language);
+            values.put(ResultsDataBase.NAME, name);
+            values.put(ResultsDataBase.DATE, date);
+            values.put(ResultsDataBase.SPENT_TIME, result);
             sqLiteDatabase.insert(ResultsDataBase.TABLE_NAME, null, values);
         } finally {
             if (null != sqLiteDatabase) {
@@ -77,15 +79,18 @@ public class ResultsDataBaseHelper extends SQLiteOpenHelper {
             Cursor cursor = null;
             try {
                 cursor = sqLiteDatabase.rawQuery("SELECT * FROM "
-                        + ResultsDataBase.TABLE_NAME, null);
+                        + ResultsDataBase.TABLE_NAME + " ORDER BY "
+                        + ResultsDataBase.SPENT_TIME + " ASC", null);
                 cursor.moveToFirst();
                 while (!cursor.isAfterLast()) {
+                    final String name
+                            = cursor.getString(cursor.getColumnIndex(ResultsDataBase.NAME));
                     final String date
                             = cursor.getString(cursor.getColumnIndex(ResultsDataBase.DATE));
                     final String spentTime
                             = cursor.getString(cursor.getColumnIndex(ResultsDataBase.SPENT_TIME));
 
-                    final DbResponse dbResponse = new DbResponse(date, spentTime);
+                    final DbResponse dbResponse = new DbResponse(name, date, spentTime);
                     result.add(dbResponse);
                     cursor.moveToNext();
                 }

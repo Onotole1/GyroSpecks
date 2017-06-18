@@ -22,6 +22,9 @@ import com.anatoliy.gyrospecks.resultswindow.controller.ResultsFragmentControlle
 public class ResultsFragment extends BaseFragment {
     private final static String RESULT_FRAGMENT
             =  "com.anatoliy.gyrospecks.resultswindow.view.ResultsFragment";
+
+    private final static String SHOW_RESULT_DIALOG = RESULT_FRAGMENT + ".showResultsDialog";
+
     private final ResultsFragmentController historyFragmentController
             = new ResultsFragmentController(this);
 
@@ -54,5 +57,9 @@ public class ResultsFragment extends BaseFragment {
 
     public static String getResultFragment() {
         return RESULT_FRAGMENT;
+    }
+
+    public static String getShowResultDialog(){
+        return SHOW_RESULT_DIALOG;
     }
 }

@@ -11,15 +11,18 @@ import android.os.Parcelable;
  */
 
 public class DbResponse implements Parcelable {
+    private String name;
     private String date;
     private String spentTime;
 
-    public DbResponse(final String date, final String spentTime) {
+    public DbResponse(final String name, final String date, final String spentTime) {
+        this.name = name;
         this.date = date;
         this.spentTime = spentTime;
     }
 
     private DbResponse(final Parcel in) {
+        name = in.readString();
         date = in.readString();
         spentTime = in.readString();
     }
@@ -35,6 +38,14 @@ public class DbResponse implements Parcelable {
             return new DbResponse[size];
         }
     };
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
+    }
 
     public String getDate() {
         return date;
@@ -59,6 +70,7 @@ public class DbResponse implements Parcelable {
 
     @Override
     public void writeToParcel(final Parcel dest, final int flags) {
+        dest.writeString(name);
         dest.writeString(date);
         dest.writeString(spentTime);
     }

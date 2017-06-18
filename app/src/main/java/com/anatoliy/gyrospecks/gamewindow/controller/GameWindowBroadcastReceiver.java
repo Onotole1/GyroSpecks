@@ -7,8 +7,11 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.anatoliy.gyrospecks.base.controller.MainActivityController;
+import com.anatoliy.gyrospecks.model.Cell;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * Date: 27.05.2017
@@ -17,11 +20,13 @@ import java.util.ArrayList;
  * @author Anatoliy
  */
 
-public class SensorValuesBroadcastReceiver extends BroadcastReceiver {
+public class GameWindowBroadcastReceiver extends BroadcastReceiver {
     private final static String SENSOR_VALUES_BROADCAST_RECEIVER
-            = "com.anatoliy.accelspecks.controller.SensorValuesBroadcastReceiver";
+            = "com.anatoliy.accelspecks.controller.GameWindowBroadcastReceiver";
 
     private final static String SENSOR_VALUES_KEY = SENSOR_VALUES_BROADCAST_RECEIVER + ".valuesKey";
+
+    private final static String RESTORE_STATE_KEY = SENSOR_VALUES_BROADCAST_RECEIVER + ".restoreKey";
     //From 10 to 0
     private final static int SENSITIVITY = 7;
 
@@ -49,6 +54,27 @@ public class SensorValuesBroadcastReceiver extends BroadcastReceiver {
             }
 
             secondPassed();
+        } else if (intent.getAction().equals(RESTORE_STATE_KEY)) {
+            notifyOnRestoreState(intent);
+        }
+    }
+
+    public static String getRestoreStateKey() {
+        return RESTORE_STATE_KEY;
+    }
+
+    private void notifyOnRestoreState(final Intent intent) {
+        final Serializable serializableExtra = intent.getSerializableExtra(RESTORE_STATE_KEY);
+        final HashSet<Cell> board = new HashSet<>();
+        if (serializableExtra instanceof HashSet) {
+            for (final Object object: (HashSet)serializableExtra) {
+                if (object instanceof Cell) {
+                    board.add((Cell) object);
+                }
+            }
+            for (final GameFragmentController observer : observers) {
+                observer.updateOnRestoreState(board);
+            }
         }
     }
 
@@ -110,4 +136,13 @@ public class SensorValuesBroadcastReceiver extends BroadcastReceiver {
         broadcastIntent.putExtra(key, values);
         LocalBroadcastManager.getInstance(context).sendBroadcast(broadcastIntent);
     }
+
+    static void sendBroadcastRestore(@NonNull final String key, @NonNull final Serializable serilizable
+            , @NonNull final Context context) {
+        final Intent broadcastIntent = new Intent();
+        broadcastIntent.setAction(key);
+        broadcastIntent.putExtra(key, serilizable);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(broadcastIntent);
+    }
+
 }

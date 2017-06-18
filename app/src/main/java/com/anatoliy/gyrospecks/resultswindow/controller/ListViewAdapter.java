@@ -43,16 +43,23 @@ class ListViewAdapter extends ArrayAdapter<DbResponse> {
 
         final DbResponse dbResponse = getItem(position);
 
-        if (dbResponse != null) {
+       if (dbResponse != null) {
+           final TextView nameTextView
+                   = (TextView) workView.findViewById(R.id.activity_history_list_element_name);
+
+           if (null != nameTextView) {
+               nameTextView.setText(dbResponse.getName());
+           }
+
             final TextView dateTextView
-                    = (TextView) workView.findViewById(R.id.activity_history_list_element_text);
+                    = (TextView) workView.findViewById(R.id.activity_history_list_element_date);
 
             if (null != dateTextView) {
                 dateTextView.setText(dbResponse.getDate());
             }
 
             final TextView spentTimeTextView = (TextView) workView
-                    .findViewById(R.id.activity_history_list_element_language);
+                    .findViewById(R.id.activity_history_list_element_result);
 
             if (null != spentTimeTextView) {
                 spentTimeTextView.setText(dbResponse.getSpentTime());

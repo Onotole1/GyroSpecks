@@ -3,23 +3,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="horizontal"
+    android:padding="@dimen/results_fragment_list_element_text_padding">
 
     <TextView
-        android:id="@+id/activity_history_list_element_text"
-        android:layout_width="match_parent"
+        android:id="@+id/activity_history_list_element_name"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:paddingLeft="@dimen/results_fragment_list_element_text_padding"
-        android:paddingRight="@dimen/results_fragment_list_element_text_padding"
-        android:paddingTop="@dimen/results_fragment_list_element_text_padding"
-        tools:text="Какой-то русский текст"/>
+        android:layout_weight="1"
+        android:gravity="center"
+        tools:text="Какой-то русский текст" />
 
     <TextView
-        android:id="@+id/activity_history_list_element_language"
-        android:layout_width="match_parent"
+        android:id="@+id/activity_history_list_element_date"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:paddingBottom="@dimen/results_fragment_list_element_text_padding"
-        android:paddingLeft="@dimen/results_fragment_list_element_text_padding"
-        android:paddingRight="@dimen/results_fragment_list_element_text_padding"
-        tools:text="Russian"/>
+        android:layout_weight="1"
+        android:gravity="center"
+        tools:text="Russian" />
+
+    <TextView
+        android:id="@+id/activity_history_list_element_result"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        tools:text="Russian" />
 </LinearLayout>

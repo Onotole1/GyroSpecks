@@ -14,7 +14,7 @@
         android:contentDescription="@string/activity_main_drawer_layout_imageView_icon_description"
         android:padding="@dimen/activity_main_drawer_element_padding"
         app:srcCompat="@drawable/ic_action_game"
-        tools:ignore="RtlHardcoded,RtlSymmetry"/>
+        tools:ignore="RtlHardcoded,RtlSymmetry" />
 
     <TextView
         android:id="@+id/drawer_element_textView_description"
@@ -23,6 +23,5 @@
         android:layout_gravity="center_vertical"
         android:paddingLeft="@dimen/activity_main_drawer_element_padding"
         android:paddingRight="@dimen/activity_main_drawer_element_padding"
-        tools:text="Новый текст"
-        />
+        tools:text="Новый текст" />
 </LinearLayout>

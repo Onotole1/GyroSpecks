@@ -6,4 +6,15 @@
     <string name="open_drawer">openDrawer</string>
     <string name="close_drawer">closeDrawer</string>
     <string name="game_fragment_menu_resume_pause_action">ResumePause</string>
+    <string name="results_fragment_header_name">Имя</string>
+    <string name="results_fragment_header_date">Дата</string>
+    <string name="results_fragment_header_result">Результат</string>
+    <string name="email">anatolij.sp@yandex.ru</string>
+    <string name="game_fragment_menu_restart_action">restart_action</string>
+    <string name="results_dialog_title">Поздравляем победителя!</string>
+    <string name="result_dialog_edittext_hint">Введите ваше имя</string>
+    <string name="result_dialog_fragment_button_ok_text">Ок</string>
+    <string name="result_dialog_length_exception">Введите имя</string>
+    <string name="results_fragment_title">Результаты</string>
+    <string name="drawer_header_content_description">drawer_header_content_description</string>
 </resources>

@@ -2,10 +2,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_resume_pause"
+        android:id="@+id/action_resume_restart"
+        android:icon="@drawable/ic_action_restart"
         android:orderInCategory="100"
+        android:title="@string/game_fragment_menu_restart_action"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_resume_pause"
         android:icon="@drawable/ic_action_pause"
-        app:showAsAction="ifRoom"
-        android:title="@string/game_fragment_menu_resume_pause_action"/>
+        android:orderInCategory="100"
+        android:title="@string/game_fragment_menu_resume_pause_action"
+        app:showAsAction="ifRoom" />
 
 </menu>

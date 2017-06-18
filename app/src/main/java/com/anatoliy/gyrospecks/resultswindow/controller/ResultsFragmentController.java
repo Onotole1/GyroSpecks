@@ -1,7 +1,6 @@
 package com.anatoliy.gyrospecks.resultswindow.controller;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -13,7 +12,9 @@ import android.widget.ListView;
 
 import com.anatoliy.gyrospecks.R;
 import com.anatoliy.gyrospecks.base.controller.BaseFragmentController;
+import com.anatoliy.gyrospecks.base.view.MainActivity;
 import com.anatoliy.gyrospecks.model.DbResponse;
+import com.anatoliy.gyrospecks.resultswindow.view.ResultsFragment;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,21 +34,26 @@ public class ResultsFragmentController extends BaseFragmentController {
             = new ResultsFragmentBroadcastReceiver();
     private LocalBroadcastManager localBroadcastManager;
     private ListView listView;
-    private final Fragment fragment;
+    private final ResultsFragment fragment;
     private Parcelable listState;
 
-    public ResultsFragmentController(final Fragment fragment) {
+    public ResultsFragmentController(final ResultsFragment fragment) {
         this.fragment = fragment;
     }
 
     @Override
     public void updateOnCreateView(final View view) {
         listView = (ListView) view.findViewById(R.id.fragment_history_list_view);
-        /*drawerLayout = (DrawerLayout) fragment.getActivity()
-                .findViewById(R.id.activity_base_drawer_layout);*/
-    }
 
-    //set title
+        final Bundle arguments = fragment.getArguments();
+
+        if (null != arguments) {
+            final String string = arguments.getString(ResultsFragment.getShowResultDialog());
+            if (null != string) {
+                ResultDialogFragment.showResultDialog(string, (MainActivity) fragment.getActivity());
+            }
+        }
+    }
 
     @Override
     public void updateOnSaveInstanceState(@NonNull final Bundle outState) {
@@ -73,7 +79,7 @@ public class ResultsFragmentController extends BaseFragmentController {
         historyFragmentBroadcastReceiver.addObserver(this);
 
         ResultsFragmentIntentService.start(ResultsFragmentIntentService.getReadHistoryKey()
-                , activity);
+                , activity, null);
     }
 
     @Override
@@ -95,7 +101,6 @@ public class ResultsFragmentController extends BaseFragmentController {
             }
         }
 
-        Collections.reverse(responseTrios);
         final ListViewAdapter listViewAdapter
                 = new ListViewAdapter(fragment.getActivity(), responseTrios);
         listView.setAdapter(listViewAdapter);

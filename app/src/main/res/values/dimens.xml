@@ -6,7 +6,7 @@
     <dimen name="results_fragment_list_element_text_padding">12dp</dimen>
     <dimen name="activity_main_drawer_element_padding">16dp</dimen>
     <dimen name="drawer_header_drawable_width">300dp</dimen>
-    <dimen name="drawer_header_drawable_height">170dp</dimen>
+    <dimen name="drawer_header_drawable_height">178dp</dimen>
     <dimen name="navigation_drawer_header_icon_width">64dp</dimen>
     <dimen name="navigation_drawer_header_height">64dp</dimen>
     <dimen name="navigation_drawer_header_margin_start">16dp</dimen>
@@ -16,4 +16,5 @@
     <dimen name="navigation_drawer_header_subtitle_margin_start">16dp</dimen>
     <dimen name="navigation_drawer_header_text_size">14sp</dimen>
     <dimen name="game_fragment_cell_textsize">24sp</dimen>
+    <dimen name="result_dialog_fragment_margin">8dp</dimen>
 </resources>

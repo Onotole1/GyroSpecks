@@ -1,5 +1,10 @@
 package com.anatoliy.gyrospecks.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
+
 /**
  * Date: 25.05.2017
  * Time: 22:08
@@ -7,7 +12,7 @@ package com.anatoliy.gyrospecks.model;
  * @author Anatoliy
  */
 
-public class Position {
+public class Position implements Serializable {
     private int x;
     private int y;
 

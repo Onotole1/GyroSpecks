@@ -19,7 +19,7 @@ import java.util.ArrayList;
  */
 public class ResultsFragmentBroadcastReceiver extends BaseBroadcastReceiver {
     private final static String HISTORY_ACTIVITY_BROADCAST_RECEIVER
-            = "com.spitchenko.appsgeyser.historywindow.controller.ResultsFragmentBroadcastReceiver";
+            = "com.anatoliy.gyrospecks.resultswindow.controller.ResultsFragmentBroadcastReceiver";
     private final static String READ_ACTION = HISTORY_ACTIVITY_BROADCAST_RECEIVER + ".readAction";
 
     @Override
@@ -41,15 +41,12 @@ public class ResultsFragmentBroadcastReceiver extends BaseBroadcastReceiver {
         return READ_ACTION;
     }
 
-    public static void sendToBroadcast(@NonNull final String action
-            , @NonNull final String packageName, @NonNull final Context context
-            , @Nullable final ArrayList<Parcelable> parcels) {
+    public static void sendToBroadcastWithParcels(@NonNull final String action
+            , @NonNull final Context context
+            , @NonNull final ArrayList<Parcelable> parcels) {
         final Intent broadcastIntent = new Intent();
         broadcastIntent.setAction(action);
-        broadcastIntent.setPackage(packageName);
-        if (null != parcels) {
-            broadcastIntent.putParcelableArrayListExtra(action, parcels);
-        }
+        broadcastIntent.putParcelableArrayListExtra(action, parcels);
         LocalBroadcastManager.getInstance(context).sendBroadcast(broadcastIntent);
     }
 }

@@ -1,4 +1,5 @@
 package com.anatoliy.gyrospecks.base.view;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -45,7 +46,14 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(final Menu menu) {
         final MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.game_fragment_menu, menu);
+        notifyObserversOnCreateOptionsMenu(menu);
         return true;
+    }
+
+    private void notifyObserversOnCreateOptionsMenu(final Menu menu) {
+        for (final MainActivityController observer:observers) {
+            observer.updateOnCreateOptionsMenu(menu);
+        }
     }
 
     @Override
@@ -127,6 +135,13 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0, size = observers.size(); i < size; i++) {
             final MainActivityController observer = observers.get(i);
             observer.updateOnSupportNavigateUp();
+        }
+    }
+
+    public void notifyOnWin(@NonNull final String result) {
+        for (int i = 0, observersSize = observers.size(); i < observersSize; i++) {
+            final MainActivityController observer = observers.get(i);
+            observer.showResutlsFragmentAndWin(result);
         }
     }
 }

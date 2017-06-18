@@ -14,16 +14,12 @@ import android.widget.TextView;
 
 import com.anatoliy.gyrospecks.R;
 import com.anatoliy.gyrospecks.base.controller.BaseFragmentController;
+import com.anatoliy.gyrospecks.base.view.MainActivity;
 import com.anatoliy.gyrospecks.gamewindow.view.GameFragment;
 import com.anatoliy.gyrospecks.model.Cell;
 import com.anatoliy.gyrospecks.model.Position;
 import com.anatoliy.gyrospecks.utils.StopWatch;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.HashSet;
 
 /**
@@ -33,12 +29,16 @@ import java.util.HashSet;
  * @author Anatoliy
  */
 
+@SuppressWarnings("deprecation")
 public class GameFragmentController extends BaseFragmentController {
+    private final static String GAME_FRAGMENT_CONTROLLER
+            = "com.anatoliy.gyrospecks.gamewindow.controller.GameFragmentController";
     private final static int NUMBER_CELLS_BY_X = 4;
     private final static int NUMBER_CELLS_BY_Y = 4;
     private final static int NUMBER_CELLS = NUMBER_CELLS_BY_X * NUMBER_CELLS_BY_Y;
     private final static String BUTTON_TAG = "button%s_%s";
-    private final static String STATE_FILE = "state";
+    private final static String STATE_IS_PAUSED = GAME_FRAGMENT_CONTROLLER + "stateIsPaused";
+    private final static String STATE_SECONDS = GAME_FRAGMENT_CONTROLLER + "stateSeconds";
 
     private View rootView;
     private TextView textViewStopwatch;
@@ -66,16 +66,13 @@ public class GameFragmentController extends BaseFragmentController {
 
     private final GameFragment gameFragment;
 
-    private final SensorValuesBroadcastReceiver sensorValuesBroadcastReceiver
-            = new SensorValuesBroadcastReceiver();
+    private final GameWindowBroadcastReceiver gameWindowBroadcastReceiver
+            = new GameWindowBroadcastReceiver();
 
-    private final HashSet<Cell> board = new HashSet<>(NUMBER_CELLS);
+    private HashSet<Cell> board = new HashSet<>(NUMBER_CELLS);
     private final HashSet<Cell> winBoard = new HashSet<>(NUMBER_CELLS);
 
-    private final Cell emptyCell
-            = new Cell(0
-            , new Position((int) (Math.random() * (NUMBER_CELLS_BY_X))
-            , (int) (Math.random() * (NUMBER_CELLS_BY_Y))));
+    private Cell emptyCell = initEmptyCell();
 
     public GameFragmentController(final GameFragment gameFragment) {
         this.gameFragment = gameFragment;
@@ -86,8 +83,6 @@ public class GameFragmentController extends BaseFragmentController {
         rootView = view;
         textViewStopwatch = (TextView) view.findViewById(R.id.activity_main_textView_stopwatch);
         newGame();
-        //stopWatch.addListener(this);
-        //stopWatch.start();
     }
 
     @Override
@@ -102,14 +97,16 @@ public class GameFragmentController extends BaseFragmentController {
 
     @Override
     public void updateOnResume() {
+        subscribe();
         resumeGame();
-        //stopWatch.resume();
+        StateService.startRestoreState(gameFragment.getActivity());
     }
 
     @Override
     public void updateOnPause() {
+        saveState();
         pauseGame();
-        //stopWatch.pause();
+        unsubscribe();
     }
 
     public boolean isPaused() {
@@ -117,27 +114,58 @@ public class GameFragmentController extends BaseFragmentController {
     }
 
     private void initWinBoard() {
-        for (int i = 0, winBoardArrayLength = winBoardArray.length; i < winBoardArrayLength; i++) {
-            final Cell cell = winBoardArray[i];
-            winBoard.add(cell);
+        if (winBoard.isEmpty()) {
+            for (int i = 0, winBoardArrayLength = winBoardArray.length; i < winBoardArrayLength
+                    ; i++) {
+                final Cell cell = winBoardArray[i];
+                winBoard.add(cell);
+            }
+        }
+    }
+
+    void updateOnRestoreState(@NonNull final HashSet<Cell> board) {
+        this.board = board;
+
+        for (final Cell cell:board) {
+            if (cell.getNumber() == 0) {
+                emptyCell = cell;
+            }
         }
 
+        drawBoard();
+
+        final SharedPreferences sharedPreferences
+                = gameFragment.getActivity()
+                .getSharedPreferences(GAME_FRAGMENT_CONTROLLER, Context.MODE_PRIVATE);
+
+        seconds = sharedPreferences.getInt(STATE_SECONDS, 0);
+        textViewStopwatch.setText(StopWatch.formatTime(seconds));
+
+        isPaused = sharedPreferences.getBoolean(STATE_IS_PAUSED, false);
+        if (isPaused) {
+            pauseGame();
+        } else {
+            resumeGame();
+        }
     }
 
     private void saveState() {
-        try {
-            final Activity activity = gameFragment.getActivity();
-            final FileOutputStream fileOutputStream
-                    = activity.openFileOutput(STATE_FILE, Context.MODE_PRIVATE);
-            final ObjectOutputStream out = new ObjectOutputStream(fileOutputStream);
-            out.writeObject(board);
-            out.flush();
-        } catch (final IOException e) {
-            e.printStackTrace();
-        }
+        final Activity activity = gameFragment.getActivity();
+        final SharedPreferences sharedPreferences
+                = activity.getSharedPreferences(GAME_FRAGMENT_CONTROLLER, Context.MODE_PRIVATE);
+        final SharedPreferences.Editor edit = sharedPreferences.edit();
+        edit.putBoolean(STATE_IS_PAUSED, isPaused);
+        edit.putInt(STATE_SECONDS, seconds);
+        edit.apply();
+
+        StateService.startSaveState(activity, board);
     }
 
-    //private void restoreState
+    private Cell initEmptyCell() {
+        return new Cell(0
+                , new Position((int) (Math.random() * (NUMBER_CELLS_BY_X))
+                , (int) (Math.random() * (NUMBER_CELLS_BY_Y))));
+    }
 
     private void newGame() {
         initWinBoard();
@@ -182,27 +210,34 @@ public class GameFragmentController extends BaseFragmentController {
     }
 
     public void resumeGame() {
-        final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(SensorValuesBroadcastReceiver.getSensorValuesKey());
-        LocalBroadcastManager.getInstance(gameFragment.getActivity())
-                .registerReceiver(sensorValuesBroadcastReceiver, intentFilter);
-
-        sensorValuesBroadcastReceiver.addObserver(this);
-
-        SensorAlarmListenerService.start(gameFragment.getActivity()
-                , SensorAlarmListenerService.getActionStart());
+        gameWindowBroadcastReceiver.addObserver(this);
+        GameWindowService.start(gameFragment.getActivity()
+                , GameWindowService.getActionStart());
 
         isPaused = false;
     }
 
-    public void pauseGame() {
+    private void subscribe() {
+        gameWindowBroadcastReceiver.addObserver(this);
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(GameWindowBroadcastReceiver.getSensorValuesKey());
+        intentFilter.addAction(GameWindowBroadcastReceiver.getRestoreStateKey());
         LocalBroadcastManager.getInstance(gameFragment.getActivity())
-                .unregisterReceiver(sensorValuesBroadcastReceiver);
-        sensorValuesBroadcastReceiver.removeObserver(this);
-        SensorAlarmListenerService.start(gameFragment.getActivity()
-                , SensorAlarmListenerService.getActionStop());
+                .registerReceiver(gameWindowBroadcastReceiver, intentFilter);
+    }
+
+    public void pauseGame() {
+        gameWindowBroadcastReceiver.removeObserver(this);
+        GameWindowService.start(gameFragment.getActivity()
+                , GameWindowService.getActionStop());
 
         isPaused = true;
+    }
+
+    private void unsubscribe() {
+        gameWindowBroadcastReceiver.removeObserver(this);
+        LocalBroadcastManager.getInstance(gameFragment.getActivity())
+                .unregisterReceiver(gameWindowBroadcastReceiver);
     }
 
     void step(final int step) {
@@ -303,9 +338,11 @@ public class GameFragmentController extends BaseFragmentController {
     }
 
     private void checkWin() {
-
         if (board.equals(winBoard)) {
-
+            final Activity activity = gameFragment.getActivity();
+            if (activity instanceof MainActivity) {
+                ((MainActivity) activity).notifyOnWin(StopWatch.formatTime(seconds));
+            }
         }
     }
 
@@ -328,6 +365,14 @@ public class GameFragmentController extends BaseFragmentController {
 
     void secondPassed() {
         seconds++;
+        textViewStopwatch.setText(StopWatch.formatTime(seconds));
+    }
+
+    public void restartGame() {
+        board.clear();
+        emptyCell = initEmptyCell();
+        newGame();
+        seconds = 0;
         textViewStopwatch.setText(StopWatch.formatTime(seconds));
     }
 }
