@@ -38,6 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/result_dialog_fragment_margin"
         android:ems="10"
+        android:gravity="center"
         android:hint="@string/result_dialog_edittext_hint"
         android:inputType="textPersonName"
         android:maxLength="10"
